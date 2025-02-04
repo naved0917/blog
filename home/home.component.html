@@ -1,0 +1,71 @@
+<div class="container-fluid mt-3">
+    <div class="card p-4">
+        <h6>All Blogs</h6>
+        <hr />
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Post Name</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Created Date</th>
+                        <th scope="col">Post Image</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="blogList && blogList.length > 0;else noData">
+                        <tr *ngFor="let blog of blogList; let i = index">
+                            <td>{{i+1}}</td>
+                            <td>{{blog?.postName}}</td>
+                            <td>{{blog?.category}}</td>
+                            <td>{{blog?.description}}</td>
+                            <td>{{blog?.timestamp}}</td>
+                            <td>
+                                <img [src]="blog?.postImage" alt="image" width="60px" height="60px">
+                            </td>
+                            <td>
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-sm dropdown" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false" style="transform: rotate(90deg)">
+                                        <i class="fa fa-ellipsis-h align-middle"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center"
+                                                (click)="onView(blog?._id)">
+                                                <i class="fa fa-eye align-bottom me-2 text-muted"></i>
+                                                View
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center"
+                                                (click)="onEdit(blog?._id)">
+                                                <i class="fa fa-pencil align-bottom me-2 text-muted"></i>
+                                                Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center"
+                                                (click)="onDelete(blog?._id)">
+                                                <i class="fa fa-trash align-bottom me-2 text-muted"></i>
+                                                Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #noData>
+                        <tr>
+                            <td [attr.colspan]="7">No Records Found!</td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

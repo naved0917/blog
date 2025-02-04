@@ -1,0 +1,56 @@
+<div class="container-fluid mt-3">
+    <div class="card p-4">
+        <h6>{{blogId ? 'Update' : 'Create'}} Blog</h6>
+        <hr />
+        <form [formGroup]="formGroup">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <div class="form-group">
+                        <label class="mendatory">Post Name</label>
+                        <input type="text" placeholder="Enter Post Name" formControlName="postName"
+                            class="form-control" />
+                        <p class="error_msg"
+                            *ngIf="formGroup?.get('postName')?.hasError('required') && formGroup.get('postName')?.touched">
+                            Post Name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="form-group">
+                        <label class="mendatory">Category</label>
+                        <input type="text" placeholder="Enter Category" formControlName="category"
+                            class="form-control" />
+                        <p class="error_msg"
+                            *ngIf="formGroup?.get('category')?.hasError('required') && formGroup.get('category')?.touched">
+                            Category is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="form-group">
+                        <label class="mendatory">Description</label>
+                        <textarea rows="4" placeholder="Enter Post Name" formControlName="description"
+                            class="form-control" maxlength="100">
+                        </textarea>
+                        <p class="error_msg"
+                            *ngIf="formGroup?.get('description')?.hasError('required') && formGroup.get('description')?.touched">
+                            Description is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="form-group">
+                        <label class="mendatory">Upload Blog Image</label>
+                        <input type="file" id="fileInput" (change)="getUploadedImage($event)">
+                        <img *ngIf="imagePreview" [src]="imagePreview" alt="preview" height="100px" width="100px">
+                    </div>
+                </div>
+
+                <div class="col-md-12 d-flex justify-content-end my-3">
+                    <button class="btn-primary me-3" (click)="onSubmit()">{{blogId ? 'Update': 'Save'}}</button>
+                    <button class="btn-primary" [routerLink]="'/private/dashboard'">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
