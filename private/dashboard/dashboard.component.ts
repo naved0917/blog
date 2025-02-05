@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { APIENDPOINTS, ApiMethods, ERROR_MESSAGE, Toaster } from '../../core/constants';
-import { UtilService } from '../../core/services';
+import { APIENDPOINTS, ApiMethods, ERROR_MESSAGE } from '../../core/constants';
 import { HttpService } from '../../core/services/http.service';
 
 @Component({
@@ -15,8 +15,8 @@ export class DashboardComponent implements OnInit {
   blogList: any[] = [];
 
   constructor(
-    private _utilService: UtilService,
-    private _httpService: HttpService
+    private _httpService: HttpService,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -24,46 +24,40 @@ export class DashboardComponent implements OnInit {
   }
 
   getBlogList(): void {
-    this._utilService.showLoader();
     this.serviceSubscription.push(
       this._httpService.apiCall(APIENDPOINTS.GET_BLOG_LIST, ApiMethods.GET, {}).subscribe({
         next: ((response: any) => {
-          this._utilService.hideLoader();
           if (response?.data?.length > 0) {
             this.blogList = response?.data;
           }
         }),
         error: ((error) => {
-          this._utilService.hideLoader();
           let message = error?.message ? error.message : ERROR_MESSAGE;
-          this._utilService.showToaster(Toaster.WARNING, message);
+          console.log('message', message);
         })
       })
     )
   }
 
   onView(id: any): void {
-    this._utilService.navigateTo('/private/blog/detail/' + id);
+    this._router.navigateByUrl('/private/blog/detail/' + id);
   }
 
   onEdit(id: any): void {
-    this._utilService.navigateTo('/private/blog/add/' + id);
+    this._router.navigateByUrl('/private/blog/add/' + id);
   }
 
   onDelete(id: any): void {
-    this._utilService.showLoader();
     this.serviceSubscription.push(
       this._httpService.apiCall(APIENDPOINTS.DELETE_BLOG, ApiMethods.GET, {}, '', id).subscribe({
         next: ((response: any) => {
-          this._utilService.hideLoader();
           if (response) {
             this.getBlogList();
           }
         }),
         error: ((error) => {
-          this._utilService.hideLoader();
           let message = error?.message ? error.message : ERROR_MESSAGE;
-          this._utilService.showToaster(Toaster.WARNING, message);
+          console.log('message', message);
         })
       })
     )

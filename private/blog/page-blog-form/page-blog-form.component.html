@@ -38,14 +38,6 @@
                         </p>
                     </div>
                 </div>
-                <div class="col-md-6 mb-2">
-                    <div class="form-group">
-                        <label class="mendatory">Upload Blog Image</label>
-                        <input type="file" id="fileInput" (change)="getUploadedImage($event)">
-                        <img *ngIf="imagePreview" [src]="imagePreview" alt="preview" height="100px" width="100px">
-                    </div>
-                </div>
-
                 <div class="col-md-12 d-flex justify-content-end my-3">
                     <button class="btn-primary me-3" (click)="onSubmit()">{{blogId ? 'Update': 'Save'}}</button>
                     <button class="btn-primary" [routerLink]="'/private/dashboard'">Cancel</button>

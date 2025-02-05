@@ -1,44 +1,52 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
-import { UtilService } from '.';
-import { APIENDPOINTS, ApiMethods } from '../constants';
-import { HttpService } from './http.service';
+import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthenticationService {
-  currentUserSubject = new BehaviorSubject<any>({});
-  currentUserSubjectAsObservable = this.currentUserSubject.asObservable();
+  private userSubject: BehaviorSubject<SocialUser | null> = new BehaviorSubject<SocialUser | null>(null);
+  public user$: Observable<SocialUser | null> = this.userSubject.asObservable();
 
   constructor(
-    private _utilService: UtilService,
-    private _httpService: HttpService,
+    private socialAuthService: SocialAuthService,
+    private http: HttpClient
   ) { }
 
-  public get currentUserValue(): any {
-    return this.currentUserSubject && this.currentUserSubject.value;
+  loginWithGoogle() {
+    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((user: SocialUser) => {
+      this.userSubject.next(user);
+      this.authenticateBackend(user.idToken, 'google');
+    });
   }
 
-  login(payload: any): Observable<any> {
-    return this._httpService.apiCall(APIENDPOINTS.USER_LOGIN, ApiMethods.POST, payload)
-      .pipe(map((response: any) => {
-        if (response?.data && response?.data.hasOwnProperty('jwt') && response?.data.jwt != '') {
-          this._utilService.saveToken(JSON.stringify(response?.data));
-          this.currentUserSubject.next(response?.data);
-        } else {
-          return { ...response, status: 'errror' };
+  loginWithFacebook() {
+    this.socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID).then((user: SocialUser) => {
+      this.userSubject.next(user);
+      this.authenticateBackend(user.authToken, 'facebook');
+    });
+  }
+
+  private authenticateBackend(token: string, provider: 'google' | 'facebook') {
+    this.http.post(`${environment.apiUrl}auth/` + provider, { token }).subscribe(
+      (response: any) => {
+        if (response.access_token) {
+          localStorage.setItem('access_token', response.access_token);
         }
-        return { ...response, status: 'success' };
-      })
-      );
+      },
+      (error) => {
+        console.error('Authentication failed', error);
+      }
+    );
   }
 
   logout() {
-    this._utilService.navigateTo('/auth/login');
-    localStorage.clear();
-    if (this.currentUserSubject) {
-      this.currentUserSubject.next(null);
-    }
+    this.socialAuthService.signOut().then(() => {
+      this.userSubject.next(null);
+      localStorage.removeItem('access_token');
+    });
   }
 }

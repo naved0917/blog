@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -55,15 +55,6 @@ export class HttpService {
     }
     return response;
   }
-
-  uploadImageFile(file: any): Observable<any> {
-    const headers = new HttpHeaders();
-    const formData = new FormData();
-    formData.append('files', file);
-    headers.append('Content-Type', 'multipart/form-data');
-    return this.http.post(`${this.apiUrl}${APIENDPOINTS.IMAGE_UPLOAD}`, formData, { headers: headers });
-  }
-
 
   handleError(error: HttpErrorResponse): any {
     const errorResponse = { message: error?.error?.text ? error?.error?.text : error?.error?.message || ERROR_MESSAGE, statusText: error?.statusText, status: error?.status };
